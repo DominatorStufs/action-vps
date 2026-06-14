@@ -2,7 +2,7 @@
 
 # ⚡ Action VPS
 
-**Free temporary Ubuntu VPS via GitHub Actions**
+**Free temporary Ubuntu VPS via GitHub Actions & GitLab CI**
 
 [![Stars](https://img.shields.io/github/stars/DominatorStufs/action-vps?style=for-the-badge&color=yellow)](https://github.com/DominatorStufs)
 [![Forks](https://img.shields.io/github/forks/DominatorStufs/action-vps?style=for-the-badge&color=blue)](https://github.com/DominatorStufs)
@@ -14,21 +14,91 @@
 
 ## 📌 Overview
 
-**Action VPS** gives you a temporary Ubuntu environment running inside GitHub Actions — with SSH access, a public tunnel URL, and `neofetch` pre-installed.
+**Action VPS** gives you a free temporary Ubuntu shell via **Cloudflare Tunnel** — works 100% on GitHub Actions & GitLab CI. No token or signup required!
 
-> ⚠️ This is **not** a real VPS. It runs for ~6 hours per session and resets every time.
+> ⚠️ Not a real VPS. Runs ~6 hours per session. All data is lost after session ends.
+
+---
+
+## ✅ Why Cloudflare Tunnel?
+
+| Feature | Details |
+|---|---|
+| 💰 Cost | 100% Free |
+| 🌐 Access | SSH via Termux |
+| ⚡ Works on GitHub Actionn |
+| 🔒 Secure | Encrypted by Cloudflare |
 
 ---
 
 ## 🚀 Quick Start
 
+### GitHub Actions
+
+```
+1. Star ⭐ & Fork 🍴 this repo
+2. Go to Actions tab
+3. Select "Action VPS" workflow
+4. Click "Run workflow" ▶️
+5. Open logs → copy SSH details
+```
+
+### GitLab CI
+
+```
+1. Fork/import this repo on GitLab
+2. Go to CI/CD → Pipelines
+3. Click "Run pipeline"
+4. Open job logs → copy SSH details
+```
+
+---
+
+## 🔌 How to Connect
+
+> ⚠️ **Terminus will NOT work!** Use **Termux** only!
+
+You will see this in logs:
+
+```
+╔════════════════════════════════════════════╗
+║           🚀 VPS LOGIN DETAILS             ║
+╠════════════════════════════════════════════╣
+║ 🌐 URL      : https://xxxx.trycloudflare.com
+║ 👤 Username : vpsuser
+║ 🔑 Password : vps@2026xyz
+╠════════════════════════════════════════════╣
+║ 💻 Termux CMD:
+║ ssh -o ProxyCommand='cloudflared access ssh
+║ --hostname xxxx.trycloudflare.com'
+║ vpsuser@xxxx.trycloudflare.com
+╚════════════════════════════════════════════╝
+```
+
+### Step 1 — Install cloudflared in Termux:
 ```bash
-1. Star ⭐ this repository
-2. Fork 🍴 this repository
-3. Open your forked repo → Actions tab
-4. Select "Action VPS" workflow
-5. Click "Run workflow" ▶️
-6. Check logs for SSH credentials & tunnel URL
+pkg install cloudflared
+```
+
+### Step 2 — Run SSH command in Termux:
+```bash
+ssh -o ProxyCommand="cloudflared access ssh --hostname xxxx.trycloudflare.com" vpsuser@xxxx.trycloudflare.com
+```
+
+### Step 3 — Enter password:
+```
+vps@2026xyz
+```
+
+> Copy the URL from action logs every time! 🥀
+
+### ✅ Pre-installed Tools:
+```bash
+# System info
+neofetch
+
+# Terminal multiplexer
+tmux
 ```
 
 ---
@@ -38,11 +108,12 @@
 | Feature | Details |
 |---|---|
 | 🐧 OS | Ubuntu (latest) |
-| 🔐 SSH | Random username & password (from logs) |
-| 🌐 Tunnel | Random public URL (changes every run) |
-| ⚡ Pre-installed | `neofetch` (auto-runs on start) |
-| ⏳ Duration | ~6 hours per session |
-| 🖐️ Start | Manual trigger only |
+| 🌐 Tunnel | Cloudflare |
+| 🖥️ CPU | 2 cores |
+| 💾 RAM | ~7 GB |
+| 💿 Disk | ~30 GB |
+| ⏳ Duration | ~6 hours |
+| 🔄 New session | New URL every run |
 
 ---
 
@@ -59,24 +130,9 @@
 
 | Type | Limit |
 |---|---|
-| Repository storage | 5 GB per namespace |
-| CI/CD Job artifacts | 1 GB |
+| Repository storage | 5 GB |
+| CI/CD artifacts | 1 GB |
 | Pipeline minutes | 400 min/month |
-
----
-
-## 🔌 How to Connect via SSH
-
-Use any SSH client (e.g. **Terminus**, **JuiceSSH**, **PuTTY**).
-
-```
-Host     → (from Actions logs)
-Port     → 22
-Username → (from Actions logs)
-Password → (from Actions logs)
-```
-
-> 💡 Tip: Run `neofetch` after connecting to verify your environment.
 
 ---
 
@@ -87,6 +143,7 @@ action-vps/
 ├── .github/
 │   └── workflows/
 │       └── vps.yml
+├── .gitlab-ci.yml
 └── README.md
 ```
 
@@ -95,21 +152,20 @@ action-vps/
 ## ⚠️ Important Notes
 
 - Session lasts **~6 hours** only
-- **URL & credentials change** on every run
-- Workflow must be **started manually** each time
-- All data is **lost** after session ends
+- **New URL every run** — copy from logs
+- Manual start required every time
+- All data lost after session ends
+- **Termux only** — Terminus not supported
 
 ---
 
 ## 💖 Support
 
-If this project helped you, consider supporting:
-
 <div align="center">
 
 **UPI** → `dpdangergameryt@oksbi`
 
-**Telegram** → [@DOMINATOR_XYZ](https://t.me/DOMINATOR_XYZ)
+**Telegram** → [Mãrlbörõ Çlôve 🥀🚬](https://t.me/DOMINATOR_XYZ)
 
 **GitHub** → [DominatorStufs](https://github.com/DominatorStufs)
 
