@@ -4,9 +4,21 @@
 
 **Free temporary Ubuntu VPS via GitHub Actions & GitLab CI**
 
-[![Stars](https://img.shields.io/github/stars/DominatorStufs/action-vps?style=for-the-badge&color=yellow)](https://github.com/DominatorStufs)
-[![Forks](https://img.shields.io/github/forks/DominatorStufs/action-vps?style=for-the-badge&color=blue)](https://github.com/DominatorStufs)
-[![Tutorial](https://t.me/learning_bots/279)
+[
+
+![Stars](https://img.shields.io/github/stars/DominatorStufs/action-vps?style=for-the-badge&color=yellow)
+
+](https://github.com/DominatorStufs)
+[
+
+![Forks](https://img.shields.io/github/forks/DominatorStufs/action-vps?style=for-the-badge&color=blue)
+
+](https://github.com/DominatorStufs)
+[
+
+![Tutorial](https://img.shields.io/badge/Tutorial-Telegram-blue?style=for-the-badge&logo=telegram)
+
+](https://t.me/learning_bots/279)
 
 </div>
 
