@@ -6,7 +6,7 @@
 
 [![Stars](https://img.shields.io/github/stars/DominatorStufs/action-vps?style=for-the-badge&color=yellow)](https://github.com/DominatorStufs)
 [![Forks](https://img.shields.io/github/forks/DominatorStufs/action-vps?style=for-the-badge&color=blue)](https://github.com/DominatorStufs)
-[![Tutorial](https://t.me/learning_bots/279)](Tutorial)
+[![Tutorial](https://t.me/learning_bots/279)
 
 </div>
 
