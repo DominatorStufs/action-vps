@@ -1,7 +1,9 @@
 name: 🖥️ Action VPS
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # இந்த வரியை கண்டிப்பாக சேர்க்க வேண்டும்
+  push:
+    branches: [ "master" ]
 
 jobs:
   vps:
