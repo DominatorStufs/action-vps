@@ -1,0 +1,106 @@
+name: 🐧 Arch Linux Session
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  arch:
+    name: Temporary Arch Linux container
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    container:
+      image: archlinux:base
+      options: --init
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: 🔧 System Setup
+        run: |
+          set -euo pipefail
+          pacman -Syu --noconfirm --needed openssh curl wget net-tools sudo tmux
+          # Neofetch is archived; use a pinned upstream revision and checksum.
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/dylanaraps/neofetch/ccd5d9f52609bbdcd5d8fa78c4fdb0f12954125f/neofetch \
+            --output /tmp/neofetch
+          echo '2a272bbaa1275f21835fd3258fb8032ccdc98348e6ccb9cf58acacd366340170  /tmp/neofetch' | sha256sum --check
+          install -m 755 /tmp/neofetch /usr/local/bin/neofetch
+          rm -f /tmp/neofetch
+
+      - name: 👤 Create User
+        run: |
+          set -euo pipefail
+          useradd -m -s /bin/bash vpsuser
+          echo "vpsuser:vps@2026xyz" | chpasswd
+          usermod -aG wheel vpsuser
+          echo "vpsuser ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vpsuser
+          chmod 440 /etc/sudoers.d/vpsuser
+          visudo -cf /etc/sudoers.d/vpsuser
+          # Preserve Neofetch on interactive login, without affecting file transfers.
+          cat >> /home/vpsuser/.bash_profile <<'PROFILE'
+
+          if [[ $- == *i* ]] && [[ -t 1 ]] && command -v neofetch >/dev/null 2>&1; then
+            neofetch || true
+          fi
+          PROFILE
+          chown vpsuser:vpsuser /home/vpsuser/.bash_profile
+          chmod 644 /home/vpsuser/.bash_profile
+
+      - name: 🔐 Configure SSH
+        run: |
+          set -euo pipefail
+          ssh-keygen -A
+          mkdir -p /run/sshd
+          cat > /etc/ssh/sshd_config.session <<'CONFIG'
+          Port 22
+          ListenAddress 127.0.0.1
+          HostKey /etc/ssh/ssh_host_ed25519_key
+          PermitRootLogin no
+          PasswordAuthentication yes
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication no
+          AuthenticationMethods password
+          AllowUsers vpsuser
+          AllowAgentForwarding no
+          X11Forwarding no
+          Subsystem sftp internal-sftp
+          CONFIG
+          /usr/sbin/sshd -t -f /etc/ssh/sshd_config.session
+          /usr/sbin/sshd -f /etc/ssh/sshd_config.session
+          echo 'SSH host-key fingerprint (verify on your client):'
+          ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+
+      - name: 🌐 Cloudflare Tunnel
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+            --output /usr/local/bin/cloudflared
+          chmod +x /usr/local/bin/cloudflared
+          cloudflared tunnel --url ssh://127.0.0.1:22 > /tmp/cf.log 2>&1 &
+          sleep 10
+
+          CF_URL=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' /tmp/cf.log | head -1 || true)
+          if [[ -z "$CF_URL" ]]; then
+            echo 'No tunnel URL received after 10 seconds.' >&2
+            cat /tmp/cf.log >&2
+            exit 1
+          fi
+          HOST=${CF_URL#https://}
+
+          echo "╔════════════════════════════════════════════╗"
+          echo "║            🚀 ARCH LOGIN DETAILS           ║"
+          echo "╠════════════════════════════════════════════╣"
+          echo "║ 🌐 URL      : $CF_URL"
+          echo "║ 👤 Username : vpsuser"
+          echo "║ 🔑 Password : vps@2026xyz"
+          echo "╠════════════════════════════════════════════╣"
+          echo "║ 💻 Termux CMD:"
+          echo "║ ssh -o LogLevel=ERROR -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ProxyCommand='cloudflared access ssh --hostname $HOST' vpsuser@$HOST"
+          echo "╚════════════════════════════════════════════╝"
+
+      - name: ⏳ Keep Alive
+        run: sleep 18000
